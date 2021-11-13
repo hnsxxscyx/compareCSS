@@ -11,7 +11,10 @@ export const parseCssToAst = (code) => {
 };
 
 const compareProperty = (node, compareAst) => {
-	const nodeSelector = csstree.generate(node.prelude).replaceAll('"', '');
+	const nodeSelector = csstree
+		.generate(node.prelude)
+		.replaceAll('"', '')
+		.replaceAll("'", '');
 	const propertyList = [];
 
 	csstree.walk(node, (aNode) => {
@@ -81,6 +84,7 @@ export const getDiffPropertyOfCss = ({ css1, css2 }) => {
 				const ast1 = parseCssToAst(css1);
 				const ast2 = parseCssToAst(css2);
 				const diff = getDiffNodesList({ ast1, ast2 });
+				resolve(diff);
 			}
 		} catch (e) {
 			console.error(e);
