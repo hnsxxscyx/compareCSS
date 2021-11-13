@@ -1,13 +1,23 @@
 <script setup>
 import { ref,watchEffect } from 'vue'
+import {getDiffPropertyOfCss} from '../helper/cssTree'
   import Editer from "../components/Editer.vue";
-  const codeValues = ref({})
+  const codeValues = ref({
+    'css1': '',
+    'css2': ''
+  })
 
 const onCodeChange = ({value,name})=>{
-  codeValues.value = {...codeValues.value, name:value};
+  codeValues.value = {...codeValues.value, [name]:`${value}`};
 }
 watchEffect(()=>{
-  console.log(codeValues.value);
+  if(Object.values(codeValues.value).filter(item=>!!item).length>1){
+    getDiffPropertyOfCss(codeValues.value).then(res=>{
+      console.log(res);
+    }).catch(err=>{
+      console.log(err);
+    })
+  }
 })
 
 </script>
@@ -15,10 +25,10 @@ watchEffect(()=>{
 <template>
   <div style="height: 80vh; display: flex">
     <div style="flex: 1">
-      <Editer @codeChange="onCodeChange" name="code-1"></Editer>
+      <Editer @codeChange="onCodeChange" name="css1"></Editer>
     </div>
     <div style="flex: 1">
-      <Editer @codeChange="onCodeChange" name="code-2"></Editer>
+      <Editer @codeChange="onCodeChange" name="css2"></Editer>
     </div>
   </div>
 </template>
