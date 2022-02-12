@@ -76,10 +76,10 @@ export const getDiffPropertyOfCss = ({ css1, css2 }) => {
 			const css2Valid = validator(css2);
 
 			if (css1Valid[0] || css2Valid[0]) {
-				reject({
+				reject([
 					css1Valid,
 					css2Valid,
-				});
+				]);
 			} else {
 				const ast1 = parseCssToAst(css1);
 				const ast2 = parseCssToAst(css2);

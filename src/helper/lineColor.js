@@ -1,11 +1,12 @@
 const EXTRA_COLOR = 'green';
 const DIFF_COLOR = 'yellow';
+const Error_COLOR = 'red';
 
-const getLineColor = (node) => {
+const getLineColor = (node, startLine, endLine) => {
 	let info = {
 		color: '',
-		startLine: node.loc.start.line,
-		endLine: node.loc.end.line,
+		startLine: startLine || node.loc.start.line,
+		endLine: endLine || node.loc.end.line,
 	};
 	switch (node.type) {
 		case 'Rule': {
@@ -14,6 +15,9 @@ const getLineColor = (node) => {
 		}
 		case 'Declaration': {
 			info.color = DIFF_COLOR;
+		}
+		case 'Error': {
+			info.color = Error_COLOR;
 		}
 	}
 	return info;
@@ -25,5 +29,18 @@ export const generateNodesListLineColor = (nodesList) => {
 			return getLineColor(node);
 		});
 	});
-    return nodeColors.flat();
+	return nodeColors.flat();
+};
+
+export const getSyntaxErrorColors = (errorList) => {
+	console.log(errorList);
+	return errorList.map((e) => {
+		return getLineColor(
+			{
+				type: 'Error',
+			},
+			e.line,
+			e.line
+		);
+	});
 };
