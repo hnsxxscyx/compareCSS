@@ -15,9 +15,11 @@ const getLineColor = (node, startLine, endLine) => {
 		}
 		case 'Declaration': {
 			info.color = DIFF_COLOR;
+			break;
 		}
 		case 'Error': {
 			info.color = ERROR_COLOR;
+			break;
 		}
 	}
 	return info;
