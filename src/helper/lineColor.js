@@ -1,6 +1,6 @@
 const EXTRA_COLOR = 'green';
 const DIFF_COLOR = 'yellow';
-const Error_COLOR = 'red';
+const ERROR_COLOR = 'red';
 
 const getLineColor = (node, startLine, endLine) => {
 	let info = {
@@ -17,7 +17,7 @@ const getLineColor = (node, startLine, endLine) => {
 			info.color = DIFF_COLOR;
 		}
 		case 'Error': {
-			info.color = Error_COLOR;
+			info.color = ERROR_COLOR;
 		}
 	}
 	return info;
