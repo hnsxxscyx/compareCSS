@@ -75,12 +75,12 @@
 
 <style>
 .color-green{
-  background: green;
+  background: rgba(0,255,0,0.5);
 }
 .color-yellow{
-  background: yellow;
+  background: rgba(255,255,0,0.5);
 }
 .color-red{
-  background: red;
+  background: rgba(255,0,0,0.5);
 }
 </style>
