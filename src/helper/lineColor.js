@@ -26,16 +26,13 @@ const getLineColor = (node, startLine, endLine) => {
 };
 
 export const generateNodesListLineColor = (nodesList) => {
-	const nodeColors = nodesList.map((nodes) => {
-		return nodes.map((node) => {
-			return getLineColor(node);
-		});
+	const nodeColors = nodesList.map((node) => {
+		return getLineColor(node);
 	});
 	return nodeColors.flat();
 };
 
 export const getSyntaxErrorColors = (errorList) => {
-	console.log(errorList);
 	return errorList.map((e) => {
 		return getLineColor(
 			{

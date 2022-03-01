@@ -66,7 +66,7 @@ const getDiffNodesList = ({ ast1, ast2 }) => {
 			}
 		}
 	});
-	return diffNodesList;
+	return diffNodesList.flat();
 };
 
 export const getDiffPropertyOfCss = ({ css1, css2 }) => {

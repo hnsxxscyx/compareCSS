@@ -6,36 +6,76 @@
   import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
   import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
   import { ref, onMounted, computed, watch } from "vue";
-
+  import {
+    generateNodesListLineColor,
+    getSyntaxErrorColors,
+  } from "../helper/lineColor";
   const props = defineProps({
     name: String,
-    colors: Array,
+    nodes: Array,
   });
 
-  const editorInstance = ref();
   let editor;
-  let decorationsInstance = []
+  let decorationsInstance = [];
 
-  const decorations = computed(()=>props.colors.map(item=>{
-    return { 
-      range: new monaco.Range(item.startLine, 1, item.endLine, 1),
-			options: {
-				isWholeLine: true,
-        className: `color-${item.color}`,
-        glyphMarginClassName: `color-${item.color}`,
-				// linesDecorationsClassName: `color-${item.color}`,
-        // inlineClassName: 
-			}
+  const nodesIsError = computed(() => {
+    return !props?.nodes?.[0]?.type;
+  });
+
+  const decorations = computed(() => {
+    const nodes = props.nodes || [];
+    const colors = !nodesIsError.value
+      ? generateNodesListLineColor(nodes)
+      : getSyntaxErrorColors(nodes);
+    return colors.map((item) => {
+      return {
+        range: new monaco.Range(item.startLine, 1, item.endLine, 1),
+        options: {
+          isWholeLine: true,
+          className: `color-${item.color}`,
+          glyphMarginClassName: `color-${item.color}`,
+          // linesDecorationsClassName: `color-${item.color}`,
+          // inlineClassName:
+        },
+      };
+    });
+  });
+
+  const contentList = computed(() => {
+    const nodes = props.nodes || [];
+    return nodes.map((node) => {
+      return {
+        text: nodesIsError.value
+          ? `line ${node.line}`
+          : `line ${
+              node.loc.start.line === node.loc.end.line
+                ? node.loc.end.line
+                : node.loc.start.line + "-" + node.loc.end.line
+            }`,
+        line: nodesIsError.value ? node.line : node.loc.start.line,
+        isError: nodesIsError.value,
+      };
+    });
+  });
+
+  watch(
+    () => decorations,
+    () => {
+      decorationsInstance = editor.deltaDecorations(
+        decorationsInstance,
+        decorations.value
+      );
+    },
+    {
+      deep: true
     }
-  }))
+  );
 
-  watch(()=>props.colors,()=>{
-      decorationsInstance = editor.deltaDecorations(decorationsInstance, decorations.value);
-  })
+  const jumpToLine = (line) => {
+    editor.revealLineInCenter(line);
+  };
 
-
-
-  const emit = defineEmits(['codeChange'])
+  const emit = defineEmits(["codeChange"]);
 
   const editorRef = ref(null);
   if (!window.MonacoEnvironment) {
@@ -64,23 +104,35 @@
     });
     editor.onDidChangeModelContent((listener) => {
       const value = editor?.getValue();
-      emit('codeChange',{value, name: props?.name})
+      emit("codeChange", { value, name: props?.name });
     });
   });
 </script>
 
 <template>
-  <div ref="editorRef" style="height: 100%"></div>
+  <div style="height: 100%">
+    <div ref="editorRef" style="height: 100%"></div>
+    <div className="content-list" style="max-height: 20vh">
+      <p
+        v-for="item in contentList"
+        :key="item?.text"
+        style="cursor: pointer"
+        @click="jumpToLine(item.line)"
+      >
+        {{ item?.text }}
+      </p>
+    </div>
+  </div>
 </template>
 
 <style>
-.color-green{
-  background: rgba(0,255,0,0.5);
-}
-.color-yellow{
-  background: rgba(255,255,0,0.5);
-}
-.color-red{
-  background: rgba(255,0,0,0.5);
-}
+  .color-green {
+    background: rgba(0, 255, 0, 0.5);
+  }
+  .color-yellow {
+    background: rgba(255, 255, 0, 0.5);
+  }
+  .color-red {
+    background: rgba(255, 0, 0, 0.5);
+  }
 </style>
